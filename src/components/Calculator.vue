@@ -1,6 +1,8 @@
 <template>
   <div>
     <h1>Tainted Cain calculator!</h1>
+    <p style="margin:10px;">A companion webapp for <a href="https://store.steampowered.com/app/1426300/The_Binding_of_Isaac_Repentance/" target="_blank">The Binding Of Isaac: Repentance</a> "Tainted Cain" character.</p>
+    <p style="margin:10px;">Enter pickups available in your current floor to know what items could be crafted!</p>
     <div id="input-wrapper">
       <div class="input-group" v-for="(group, index) of pickupDefinitions" :key="index">
         <div class="input-pickup" v-for="pickup of group" :key="pickup.index">
@@ -19,7 +21,7 @@
     </div>
     <div id="items-wrapper">
       <div class="item" v-for="(item,itemId) in visibleItems" v-bind:key="itemId" v-bind:class="{ 'disabled': anyPickups && !item.isCraftable, 'craftable': item.isCraftable}">
-        <img class="item-img" v-bind:src="getIconFromId(itemId)" @mouseenter="setHover(itemId, true)" @mouseleave="setHover(itemId, false)"/>
+        <div class="bg-collectible" :class="'bg-collectibles_'+itemId" @mouseenter="setHover(itemId, true)" @mouseleave="setHover(itemId, false)"></div>
         <div class="recipes-modal" v-if="itemHoverStates[itemId]" v-once>
           <div class="recipes-desc">
             <b>{{item.name}}</b><br/>
@@ -27,7 +29,7 @@
           </div>
           <div class="recipes-block" v-for="(recipe, recipeId) in getRecipesFromId(itemId)" v-bind:key="recipeId" v-bind:class="{ 'recipeCraftable':recipe.isCraftable}">
               <div class="recipe-block" v-for="(singleRecipe, singleRecipeId) in recipe" v-bind:key="singleRecipeId">
-                <img v-bind:src="getIconFromPickupId(singleRecipe)"/>
+                <div class="bg-pickup" :class="'bg-pickup-'+singleRecipe"></div>
               </div>
           </div>
           <div v-if="!getRecipesFromId(itemId)">
@@ -119,10 +121,6 @@ export default {
     },
     setHover(itemId, state) {
       Vue.set(this.itemHoverStates, itemId, state);
-    },
-    getIconFromId(id) {
-      let currentId = id.toString().padStart(3, "0");
-      return `./collectibles/collectibles_${currentId}.png`;
     },
     getIconFromPickupId(pickupId) {
       return `./bagicons/${pickupId}.png`;
